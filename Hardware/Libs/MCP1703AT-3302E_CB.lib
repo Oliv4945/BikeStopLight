@@ -1,0 +1,29 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#(c) SnapEDA 2016 (snapeda.com)
+#This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA) with Design Exception 1.0
+#
+# MCP1703AT-3302E/CB
+#
+DEF MCP1703AT-3302E/CB U 0 40 Y Y 1 L N
+F0 "U" -154 300 50 H V L BNN
+F1 "MCP1703AT-3302E/CB" -206 -589 50 H V L BNN
+F2 "SOT95P300X145-3N" 0 0 50 H I L BNN
+F3 "None" 0 0 50 H I L BNN
+F4 "Unavailable" 0 0 50 H I L BNN
+F5 "SOT-23 Microchip" 0 0 50 H I L BNN
+F6 "MCP1703AT-3302E/CB" 0 0 50 H I L BNN
+F7 "MCP1703A Series 250 mA 3.3 V Low Dropout Regulator - SOT-23" 0 0 50 H I L BNN
+F8 "Microchip" 0 0 50 H I L BNN
+DRAW
+P 2 0 0 6 -500 200 -500 -400 N
+P 2 0 0 6 -500 -400 500 -400 N
+P 2 0 0 6 500 -400 500 200 N
+P 2 0 0 6 500 200 -500 200 N
+X VIN 3 -700 0 200 R 40 40 0 0 I 
+X GND 1 -700 -200 200 R 40 40 0 0 P 
+X VOUT 2 700 0 200 L 40 40 0 0 O 
+ENDDRAW
+ENDDEF
+#
+# End Library
