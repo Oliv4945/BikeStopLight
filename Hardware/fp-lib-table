@@ -2,4 +2,5 @@
   (lib (name MCP1703AT-3302E_CB)(type Legacy)(uri ${KIPRJMOD}/Libs/MCP1703AT-3302E_CB.mod)(options "")(descr ""))
   (lib (name ABS07-120-32.768KHZ-T)(type Legacy)(uri ${KIPRJMOD}/Libs/ABS07-120-32.768KHZ-T.mod)(options "")(descr ""))
   (lib (name DPAK229P990X238-3N)(type Legacy)(uri ${KIPRJMOD}/Libs/DPAK229P990X238-3N.mod)(options "")(descr ""))
+  (lib (name Perso)(type KiCad)(uri ${KIPRJMOD}/Libs/Perso.pretty)(options "")(descr ""))
 )
