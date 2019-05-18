@@ -998,32 +998,6 @@ Wire Wire Line
 Connection ~ 1100 2250
 Wire Wire Line
 	1100 2250 1350 2250
-$Comp
-L Connector_Generic:Conn_01x02 J3
-U 1 1 5CD40FA1
-P 8550 2900
-F 0 "J3" H 8470 2575 50  0000 C CNN
-F 1 "BAT" H 8470 2666 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 8550 2900 50  0001 C CNN
-F 3 "~" H 8550 2900 50  0001 C CNN
-	1    8550 2900
-	-1   0    0    1   
-$EndComp
-Wire Wire Line
-	8750 2900 9450 2900
-Wire Wire Line
-	9450 2800 8750 2800
-$Comp
-L power:+BATT #PWR0108
-U 1 1 5CD4BED2
-P 9450 2800
-F 0 "#PWR0108" H 9450 2650 50  0001 C CNN
-F 1 "+BATT" H 9465 2973 50  0000 C CNN
-F 2 "" H 9450 2800 50  0001 C CNN
-F 3 "" H 9450 2800 50  0001 C CNN
-	1    9450 2800
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	950  7400 1050 7400
 Wire Wire Line
@@ -1049,8 +1023,6 @@ F 3 "https://www.onsemi.com/pub/Collateral/NTD4809N-D.PDF" H 6950 3700 50  0001 
 	1    6950 3700
 	1    0    0    -1  
 $EndComp
-Entry Wire Line
-	3950 6150 4050 6250
 Wire Wire Line
 	7050 3500 7150 3500
 $Comp
@@ -1207,17 +1179,6 @@ F 1 "RFM95W-868S2" H 6950 5750 50  0000 C CNN
 F 2 "RF_Module:HOPERF_RFM9XW_SMD" H 3300 6900 50  0001 C CNN
 F 3 "http://www.hoperf.com/upload/rf/RFM95_96_97_98W.pdf" H 3300 6900 50  0001 C CNN
 	1    6600 5250
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:VCC #PWR0118
-U 1 1 5CD44CB6
-P 6600 4400
-F 0 "#PWR0118" H 6600 4250 50  0001 C CNN
-F 1 "VCC" H 6617 4573 50  0000 C CNN
-F 2 "" H 6600 4400 50  0001 C CNN
-F 3 "" H 6600 4400 50  0001 C CNN
-	1    6600 4400
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
@@ -1556,8 +1517,6 @@ Wire Wire Line
 Wire Wire Line
 	5500 1850 6050 1850
 Wire Wire Line
-	6050 1950 5500 1950
-Wire Wire Line
 	5500 2350 6050 2350
 Wire Wire Line
 	5500 2450 6050 2450
@@ -1698,14 +1657,57 @@ Wire Wire Line
 Wire Wire Line
 	2700 1900 2700 1850
 $Comp
-L power:GND #PWR0107
-U 1 1 5CE8B7EE
-P 9450 2900
-F 0 "#PWR0107" H 9450 2650 50  0001 C CNN
-F 1 "GND" H 9455 2727 50  0000 C CNN
-F 2 "" H 9450 2900 50  0001 C CNN
-F 3 "" H 9450 2900 50  0001 C CNN
-	1    9450 2900
+L power:+3.3V #PWR0118
+U 1 1 5CE124DA
+P 6600 4400
+F 0 "#PWR0118" H 6600 4250 50  0001 C CNN
+F 1 "+3.3V" H 6615 4573 50  0000 C CNN
+F 2 "" H 6600 4400 50  0001 C CNN
+F 3 "" H 6600 4400 50  0001 C CNN
+	1    6600 4400
 	1    0    0    -1  
 $EndComp
+$Comp
+L Device:R_Small R8
+U 1 1 5CE13172
+P 750 1550
+F 0 "R8" H 809 1596 50  0000 L CNN
+F 1 "0 Ohm" H 809 1505 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" H 750 1550 50  0001 C CNN
+F 3 "~" H 750 1550 50  0001 C CNN
+	1    750  1550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	750  1450 750  1100
+Connection ~ 750  1100
+Wire Wire Line
+	750  1650 750  1950
+Wire Wire Line
+	750  1950 850  1950
+Connection ~ 850  1950
+$Comp
+L Connector_Generic:Conn_01x01 S2
+U 1 1 5CE3D1CA
+P 6250 1850
+F 0 "S2" H 6330 1892 50  0000 L CNN
+F 1 "Touch_IO2" H 6330 1801 50  0000 L CNN
+F 2 "" H 6250 1850 50  0001 C CNN
+F 3 "~" H 6250 1850 50  0001 C CNN
+	1    6250 1850
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x01 S3
+U 1 1 5CE3D3C0
+P 6100 1950
+F 0 "S3" H 6180 1992 50  0000 L CNN
+F 1 "Touch_IO3" H 6180 1901 50  0000 L CNN
+F 2 "" H 6100 1950 50  0001 C CNN
+F 3 "~" H 6100 1950 50  0001 C CNN
+	1    6100 1950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5500 1950 5900 1950
 $EndSCHEMATC
