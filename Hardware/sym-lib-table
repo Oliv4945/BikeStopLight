@@ -1,3 +1,4 @@
 (sym_lib_table
   (lib (name ABS07-120-32.768KHZ-T)(type Legacy)(uri ${KIPRJMOD}/Libs/ABS07-120-32.768KHZ-T.lib)(options "")(descr ""))
+  (lib (name BikeStopLight-eagle-import)(type Legacy)(uri ${KIPRJMOD}/BikeStopLight-eagle-import.lib)(options "")(descr ""))
 )
