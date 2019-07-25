@@ -1384,19 +1384,6 @@ ADR
 Wire Wire Line
 	8800 5200 9350 5200
 NoConn ~ 9350 5200
-Wire Wire Line
-	4200 6250 4350 6250
-$Comp
-L Connector_Generic:Conn_01x01 J4
-U 1 1 5CE45D62
-P 4550 6250
-F 0 "J4" H 4630 6292 50  0000 L CNN
-F 1 "Conn_01x01" H 4630 6201 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical" H 4550 6250 50  0001 C CNN
-F 3 "~" H 4550 6250 50  0001 C CNN
-	1    4550 6250
-	1    0    0    -1  
-$EndComp
 $Comp
 L BikeStopLight-rescue:PTS645SM43SMTR92_LFS-dk_Tactile-Switches S1
 U 1 1 5CE533E2
@@ -1811,4 +1798,43 @@ F 3 "~" H 6300 6550 50  0001 C CNN
 	1    6300 6550
 	1    0    0    -1  
 $EndComp
+$Comp
+L Connector_Generic:Conn_01x03 J4
+U 1 1 5D3A7BF6
+P 4950 6350
+F 0 "J4" H 4868 6025 50  0000 C CNN
+F 1 "LED-OUT" H 4868 6116 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 4950 6350 50  0001 C CNN
+F 3 "~" H 4950 6350 50  0001 C CNN
+	1    4950 6350
+	1    0    0    1   
+$EndComp
+Wire Wire Line
+	4200 6250 4750 6250
+$Comp
+L power:GNDPWR #PWR0127
+U 1 1 5D3B7FE8
+P 4700 6450
+F 0 "#PWR0127" H 4700 6250 50  0001 C CNN
+F 1 "GNDPWR" H 4704 6296 50  0000 C CNN
+F 2 "" H 4700 6400 50  0001 C CNN
+F 3 "" H 4700 6400 50  0001 C CNN
+	1    4700 6450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4750 6450 4700 6450
+$Comp
+L power:VCC #PWR0128
+U 1 1 5D40B691
+P 4550 6350
+F 0 "#PWR0128" H 4550 6200 50  0001 C CNN
+F 1 "VCC" H 4567 6523 50  0000 C CNN
+F 2 "" H 4550 6350 50  0001 C CNN
+F 3 "" H 4550 6350 50  0001 C CNN
+	1    4550 6350
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4550 6350 4750 6350
 $EndSCHEMATC
