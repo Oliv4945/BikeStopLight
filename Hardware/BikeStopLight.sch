@@ -1654,22 +1654,6 @@ F 3 "" H 6600 4400 50  0001 C CNN
 	1    6600 4400
 	1    0    0    -1  
 $EndComp
-$Comp
-L Device:R_Small R8
-U 1 1 5CE13172
-P 750 1550
-F 0 "R8" H 809 1596 50  0000 L CNN
-F 1 "0 Ohm" H 809 1505 50  0000 L CNN
-F 2 "Resistor_SMD:R_0805_2012Metric" H 750 1550 50  0001 C CNN
-F 3 "~" H 750 1550 50  0001 C CNN
-	1    750  1550
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	750  1450 750  1100
-Connection ~ 750  1100
-Wire Wire Line
-	750  1650 750  1950
 Wire Wire Line
 	750  1950 850  1950
 Connection ~ 850  1950
@@ -1837,4 +1821,20 @@ F 3 "" H 4550 6350 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	4550 6350 4750 6350
+$Comp
+L Connector_Generic:Conn_01x02 J7
+U 1 1 5D4A5CC8
+P 950 1500
+F 0 "J7" H 1030 1492 50  0000 L CNN
+F 1 "VCC_VBAT" H 1030 1401 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 950 1500 50  0001 C CNN
+F 3 "~" H 950 1500 50  0001 C CNN
+	1    950  1500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	750  1500 750  1100
+Connection ~ 750  1100
+Wire Wire Line
+	750  1600 750  1950
 $EndSCHEMATC
