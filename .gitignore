@@ -1,5 +1,6 @@
 # Created by https://www.gitignore.io/api/kicad
 # Edit at https://www.gitignore.io/?templates=kicad
+Software/build
 
 ### KiCad ###
 # For PCBs designed using KiCad: http://www.kicad-pcb.org/

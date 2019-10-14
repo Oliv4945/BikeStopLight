@@ -1,0 +1,3 @@
+[submodule "Software/bno055_stm32"]
+	path = Software/bno055_stm32
+	url = https://github.com/ivyknob/bno055_stm32.git
