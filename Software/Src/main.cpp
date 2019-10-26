@@ -85,6 +85,7 @@ int main(void)
 	float linacc_avg = 0;
 	float linacc_long_term = 0;
 	float linacc_decision = 0;
+	volatile uint16_t ldr_value;
 
 	// WS2812
 	s_color led_color_green = { 0x0F, 0x00, 0x00 };
@@ -118,16 +119,23 @@ int main(void)
   MX_DMA_Init();
   MX_ADC_Init();
   MX_I2C1_Init();
-  MX_SPI1_Init();
-  MX_TSC_Init();
-  MX_TIM2_Init();
-  MX_TOUCHSENSING_Init();
   MX_LPTIM1_Init();
+  MX_SPI1_Init();
+  MX_TIM2_Init();
+  MX_TSC_Init();
+  MX_TOUCHSENSING_Init();
   /* USER CODE BEGIN 2 */
+	// ADC Calibration
+	if (HAL_ADCEx_Calibration_Start(&hadc, ADC_SINGLE_ENDED) != HAL_OK) {
+        Error_Handler();
+	}
+
 	// Power WS2812
 	HAL_GPIO_WritePin(WS2812_PWR_ON_GPIO_Port, WS2812_PWR_ON_Pin, GPIO_PIN_SET);
 	// Switch ON red LED
 	HAL_GPIO_WritePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin, GPIO_PIN_SET);
+	// POWER LDR
+	HAL_GPIO_WritePin(LDR_PWR_GPIO_Port, LDR_PWR_Pin, GPIO_PIN_SET);
 
 	// Init BNO055
 	bno055_assignI2C(&hi2c1);
@@ -173,6 +181,8 @@ int main(void)
 		 leds.update();
 		 }
 		 */
+		ldr_value = get_ldr_value();
+
 		uint8_t bno_error = bno055_getSystemError();
 
 		bno055_vector_t linacc = bno055_getVectorLinearAccel();
@@ -181,7 +191,15 @@ int main(void)
 		linacc_long_term = linacc_long_term * 0.99 + linacc_avg * 0.01;
 		linacc_decision = linacc_avg - linacc_long_term;
 
-		  if ((linacc_decision > 0.3) && (state == off)) {
+		// TODO: Should not update every loop to decrease battery consumption
+		if ((ldr_value < 150) && (state == off)) {
+			leds.setColorAll(led_color_red);
+			leds.update();
+		} else if ((ldr_value >= 150) && (state == off)) {
+			leds.setColorAll(led_color_off);
+			leds.update();
+		}
+		  if ((linacc_decision > 0.2) && (state == off)) {
 			  // Start timer and switch on the LEDs
 			  leds.setColorAll(led_color_off);
 			  uint8_t leds_on = ((uint8_t)(linacc_avg * 8)) % 16;
@@ -196,9 +214,7 @@ int main(void)
 		  }
 
 		  if (state == braking_timeout) {
-			  // Switch off the LEDss
-			  leds.setColorAll(led_color_off);
-			  leds.update();
+			  // LED switching off id done regarding LDR
 			  state = off;
 		  }
 		  HAL_Delay(10);
@@ -285,6 +301,35 @@ void eeprom_write_bno_calibration_data(bno055_calibration_data_t data) {
 	HAL_FLASHEx_DATAEEPROM_Lock();
 }
 
+uint16_t get_ldr_value(void) {
+	uint16_t value;
+
+	ADC_ChannelConfTypeDef sConfig;
+
+	sConfig.Channel = ADC_CHANNEL_8;  
+	  
+	if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+
+	if (HAL_ADC_Start(&hadc) != HAL_OK) {
+		Error_Handler();
+	}
+
+	// TODO: More accurate timeout
+	if (HAL_ADC_PollForConversion(&hadc, 100) != HAL_OK) {
+		Error_Handler();
+	}
+	while ((HAL_ADC_GetState(&hadc) & HAL_ADC_STATE_REG_EOC) != HAL_ADC_STATE_REG_EOC) {}
+	value = HAL_ADC_GetValue(&hadc);
+
+	
+	if (HAL_ADC_Stop(&hadc) != HAL_OK) {
+		Error_Handler();
+	}
+
+	return value;
+}
 /* USER CODE END 4 */
 
 /**

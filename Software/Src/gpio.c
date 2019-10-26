@@ -39,6 +39,7 @@
         * Free pins are configured automatically as Analog (this feature is enabled through 
         * the Code Generation settings)
      PA1   ------> SharedAnalog_PA1
+     PB0   ------> SharedAnalog_PB0
 */
 void MX_GPIO_Init(void)
 {
@@ -56,8 +57,8 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, SX_RESET_Pin|LDR_PWR_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PA0 PAPin PA7 PAPin */
-  GPIO_InitStruct.Pin = GPIO_PIN_0|VBAT_SCALE_Pin|GPIO_PIN_7|LDR_IN_Pin;
+  /*Configure GPIO pins : PA0 PAPin PA7 PA15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|VBAT_SCALE_Pin|GPIO_PIN_7|GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -69,11 +70,11 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PB0 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  /*Configure GPIO pin : PtPin */
+  GPIO_InitStruct.Pin = LDR_IN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(LDR_IN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PBPin PBPin */
   GPIO_InitStruct.Pin = SX_RESET_Pin|LDR_PWR_Pin;

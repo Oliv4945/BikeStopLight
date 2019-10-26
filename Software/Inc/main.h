@@ -58,6 +58,7 @@ void Error_Handler(void);
 /* USER CODE BEGIN EFP */
 bno055_calibration_data_t eeprom_read_bno_calibration_data();
 void eeprom_write_bno_calibration_data(bno055_calibration_data_t data);
+uint16_t get_ldr_value(void);
 
 /* USER CODE END EFP */
 
@@ -74,6 +75,8 @@ void eeprom_write_bno_calibration_data(bno055_calibration_data_t data);
 #define TSC_G2_IN_GPIO_Port GPIOA
 #define LED_DOWN_Pin GPIO_PIN_6
 #define LED_DOWN_GPIO_Port GPIOA
+#define LDR_IN_Pin GPIO_PIN_0
+#define LDR_IN_GPIO_Port GPIOB
 #define SX_RESET_Pin GPIO_PIN_1
 #define SX_RESET_GPIO_Port GPIOB
 #define SX_DIO0_EXTI8_Pin GPIO_PIN_8
@@ -82,8 +85,6 @@ void eeprom_write_bno_calibration_data(bno055_calibration_data_t data);
 #define SX_DIO0_EXTI9_GPIO_Port GPIOA
 #define SX_NSS_Pin GPIO_PIN_10
 #define SX_NSS_GPIO_Port GPIOA
-#define LDR_IN_Pin GPIO_PIN_15
-#define LDR_IN_GPIO_Port GPIOA
 #define LDR_PWR_Pin GPIO_PIN_4
 #define LDR_PWR_GPIO_Port GPIOB
 #define BNO_INT_EXTI5_Pin GPIO_PIN_5
