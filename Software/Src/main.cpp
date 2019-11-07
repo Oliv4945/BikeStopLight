@@ -59,7 +59,7 @@
 const uint32_t eeprom_base_address = 0x08080000;
 const uint8_t linacc_filter_weight = 10;
 volatile StatesEnum state = off;
-
+volatile bool bno_int_triggered = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -86,11 +86,12 @@ int main(void)
 	float linacc_long_term = 0;
 	float linacc_decision = 0;
 	volatile uint16_t ldr_value;
+	uint8_t byte;
 
 	// WS2812
 	s_color led_color_green = { 0x0F, 0x00, 0x00 };
 	s_color led_color_red = { 0x00, 0x0F, 0x00 };
-	s_color led_color_red_brake = { 0x00, 0x03, 0x00 };
+	s_color led_color_red_brake = { 0x0F, 0x0F, 0x00 };
 	s_color led_color_blue = { 0x00, 0x00, 0x0F};
 	s_color led_color_off = { 0x00, 0x00, 0x00 };
 	WS2812B leds(15);
@@ -140,9 +141,9 @@ int main(void)
 	// Init BNO055
 	bno055_assignI2C(&hi2c1);
 	bno055_setup();
-	// Get from EEPROM
-	bno055_setCalibrationData(eeprom_read_bno_calibration_data());
-	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
+    bno055_setCalibrationData(eeprom_read_bno_calibration_data());
+    bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
+    // Get from EEPROM
 	bno055_calibration_state_t bno_calib_state = {.sys = 0, .gyro = 0, .mag = 0, .accel = 0};
 	while ((bno_calib_state.sys != 3) || (bno_calib_state.mag != 3) ||  (bno_calib_state.gyro != 3) || (bno_calib_state.accel != 3)) {
 		bno_calib_state = bno055_getCalibrationState();
@@ -152,7 +153,57 @@ int main(void)
 	bno055_calibration_data_t bno_calib_data = bno055_getCalibrationData();
 	eeprom_write_bno_calibration_data(bno_calib_data);
 
+	// Enable only accelerometer interrupt and redirect it to interrupt pin. Cleat INT flags
+	// TODO - Why it can not be set before calibration procedure ?
+	bno055_setOperationMode(BNO055_OPERATION_MODE_CONFIG);
+	bno055_setInterruptMask(0xC0);
+	bno055_getInterruptStatus();
+	bno055_setInterruptEnable(0xC0);
+	// bno055_setInterruptAccelThresholds(0.1, 0, 1);
+	// bno055_setInterruptNoOrSlowMotion(0, 1);
+	bno055_setInterruptAccelSettings(0x1C);
+	// TODO - Why calibration has to be written again ?
+    bno055_setCalibrationData(bno_calib_data);
+	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
 
+	volatile uint8_t bno_int_statu = 0;
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	while(1) {
+		if (bno_int_triggered == true) {
+			bno_int_triggered = false;
+			bno_int_statu = bno055_getInterruptStatus();
+		}
+		if (bno_int_statu > 0) {
+			if ((bno_int_statu >> 7) == 1) {
+				HAL_GPIO_WritePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(WS2812_PWR_ON_GPIO_Port, WS2812_PWR_ON_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(LDR_PWR_GPIO_Port, LDR_PWR_Pin, GPIO_PIN_RESET);
+				bno055_setPowerMode(BNO055_POWER_MODE_SUSPEND);
+				HAL_ADCEx_DisableVREFINT();
+				HAL_ADC_DeInit(&hadc);
+				HAL_ADC_MspDeInit(&hadc);
+				HAL_I2C_MspDeInit(&hi2c1);
+				HAL_SPI_MspDeInit(&hspi1);
+				HAL_TSC_MspDeInit(&htsc);
+				HAL_TIM_Base_MspDeInit(&htim2);
+				GPIO_InitStruct.Pin = 0xFFFFU;
+				GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+				GPIO_InitStruct.Pull = GPIO_NOPULL;
+				HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+				GPIO_InitStruct.Pin = 0xDBU;
+				HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+				__HAL_RCC_GPIOA_CLK_DISABLE();
+				__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
+				HAL_SuspendTick();
+				HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
+				HAL_ResumeTick();
+			} else {
+				HAL_GPIO_WritePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin, GPIO_PIN_SET);
+			}
+			bno_int_statu += 1;
+		}
+		HAL_Delay(500);
+	}
 
   /* USER CODE END 2 */
 
@@ -181,6 +232,13 @@ int main(void)
 		 leds.update();
 		 }
 		 */
+		volatile uint8_t bno_int_status = 0;
+		bno_int_status = bno055_getInterruptStatus();
+		if (bno_int_status > 0) {
+			bno_int_status += 1;
+		}
+
+
 		ldr_value = get_ldr_value();
 
 		uint8_t bno_error = bno055_getSystemError();
@@ -202,7 +260,7 @@ int main(void)
 		  if ((linacc_decision > 0.2) && (state == off)) {
 			  // Start timer and switch on the LEDs
 			  leds.setColorAll(led_color_off);
-			  uint8_t leds_on = ((uint8_t)(linacc_avg * 8)) % 16;
+			  uint8_t leds_on = ((uint8_t)(linacc_avg * 8)+2) % 16;
 			  leds.setColorRange(0, leds_on, led_color_red);
 			  leds.update();
 			  state = braking;
@@ -329,6 +387,13 @@ uint16_t get_ldr_value(void) {
 	}
 
 	return value;
+}
+
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	if (GPIO_Pin == BNO_INT_EXTI5_Pin) {
+		bno_int_triggered = true;
+    }
 }
 /* USER CODE END 4 */
 

@@ -71,6 +71,7 @@ Mcu.UserName=STM32L052K8Tx
 MxCube.Version=5.2.0
 MxDb.Version=DB.5.0.20
 NVIC.DMA1_Channel1_IRQn=true\:0\:0\:false\:false\:true\:false\:true
+NVIC.EXTI4_15_IRQn=true\:0\:0\:false\:false\:true\:true\:true
 NVIC.HardFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false
 NVIC.LPTIM1_IRQn=true\:0\:0\:false\:false\:true\:true\:true
 NVIC.NonMaskableInt_IRQn=true\:0\:0\:false\:false\:true\:false\:false

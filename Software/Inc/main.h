@@ -59,6 +59,7 @@ void Error_Handler(void);
 bno055_calibration_data_t eeprom_read_bno_calibration_data();
 void eeprom_write_bno_calibration_data(bno055_calibration_data_t data);
 uint16_t get_ldr_value(void);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 /* USER CODE END EFP */
 
@@ -81,14 +82,17 @@ uint16_t get_ldr_value(void);
 #define SX_RESET_GPIO_Port GPIOB
 #define SX_DIO0_EXTI8_Pin GPIO_PIN_8
 #define SX_DIO0_EXTI8_GPIO_Port GPIOA
+#define SX_DIO0_EXTI8_EXTI_IRQn EXTI4_15_IRQn
 #define SX_DIO0_EXTI9_Pin GPIO_PIN_9
 #define SX_DIO0_EXTI9_GPIO_Port GPIOA
+#define SX_DIO0_EXTI9_EXTI_IRQn EXTI4_15_IRQn
 #define SX_NSS_Pin GPIO_PIN_10
 #define SX_NSS_GPIO_Port GPIOA
 #define LDR_PWR_Pin GPIO_PIN_4
 #define LDR_PWR_GPIO_Port GPIOB
 #define BNO_INT_EXTI5_Pin GPIO_PIN_5
 #define BNO_INT_EXTI5_GPIO_Port GPIOB
+#define BNO_INT_EXTI5_EXTI_IRQn EXTI4_15_IRQn
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
