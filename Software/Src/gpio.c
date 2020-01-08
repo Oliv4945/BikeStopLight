@@ -30,14 +30,7 @@
 
 /* USER CODE END 1 */
 
-/** Configure pins as 
-        * Analog 
-        * Input 
-        * Output
-        * EVENT_OUT
-        * EXTI
-        * Free pins are configured automatically as Analog (this feature is enabled through 
-        * the Code Generation settings)
+/** Configure pins
      PA1   ------> SharedAnalog_PA1
      PB0   ------> SharedAnalog_PB0
 */
@@ -56,6 +49,12 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, SX_RESET_Pin|LDR_PWR_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : PC14 PC15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PA0 PAPin PA7 PA15 */
   GPIO_InitStruct.Pin = GPIO_PIN_0|VBAT_SCALE_Pin|GPIO_PIN_7|GPIO_PIN_15;
