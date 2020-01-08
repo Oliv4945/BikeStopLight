@@ -138,12 +138,12 @@ int main(void)
 	// POWER LDR
 	HAL_GPIO_WritePin(LDR_PWR_GPIO_Port, LDR_PWR_Pin, GPIO_PIN_SET);
 
-	// Init BNO055
+	// BNO055 init
 	bno055_assignI2C(&hi2c1);
 	bno055_setup();
+	// BNO055 Calibration
     bno055_setCalibrationData(eeprom_read_bno_calibration_data());
     bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
-    // Get from EEPROM
 	bno055_calibration_state_t bno_calib_state = {.sys = 0, .gyro = 0, .mag = 0, .accel = 0};
 	while ((bno_calib_state.sys != 3) || (bno_calib_state.mag != 3) ||  (bno_calib_state.gyro != 3) || (bno_calib_state.accel != 3)) {
 		bno_calib_state = bno055_getCalibrationState();
@@ -165,19 +165,23 @@ int main(void)
 	// TODO - Why calibration has to be written again ?
     bno055_setCalibrationData(bno_calib_data);
 	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
-
+	
 	volatile uint8_t bno_int_statu = 0;
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	while(1) {
 		if (bno_int_triggered == true) {
 			bno_int_triggered = false;
-			bno_int_statu = bno055_getInterruptStatus();
+			// bno_int_statu = bno055_getInterruptStatus();
 		}
-		if (bno_int_statu > 0) {
-			if ((bno_int_statu >> 7) == 1) {
+		// if (bno_int_statu > 0) {
+		if (bno_int_statu == 0) {
+			// if ((bno_int_statu >> 7) == 1) {
+			if (bno_int_statu == 0) {
 				HAL_GPIO_WritePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(WS2812_PWR_ON_GPIO_Port, WS2812_PWR_ON_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(LDR_PWR_GPIO_Port, LDR_PWR_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET); // I2C
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET); // I2
 				bno055_setPowerMode(BNO055_POWER_MODE_SUSPEND);
 				HAL_ADCEx_DisableVREFINT();
 				HAL_ADC_DeInit(&hadc);
