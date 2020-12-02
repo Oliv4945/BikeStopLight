@@ -156,12 +156,16 @@ int main(void)
 	// Enable only accelerometer interrupt and redirect it to interrupt pin. Cleat INT flags
 	// TODO - Why it can not be set before calibration procedure ?
 	bno055_setOperationMode(BNO055_OPERATION_MODE_CONFIG);
-	bno055_setInterruptMask(0xC0);
+	bno055_setInterruptMask(BNO055_INT_MSK_ACC_NM | BNO055_INT_MSK_ACC_AM);
 	bno055_getInterruptStatus();
-	bno055_setInterruptEnable(0xC0);
+	bno055_setInterruptEnable(BNO055_INT_EN_ACC_NM | BNO055_INT_EN_ACC_AM);
 	// bno055_setInterruptAccelThresholds(0.1, 0, 1);
-	// bno055_setInterruptNoOrSlowMotion(0, 1);
-	bno055_setInterruptAccelSettings(0x1C);
+	// bno055_setInterruptNoOrSlowMotion(1, 1);
+	bno055_setInterruptAccelSettings(
+		BNO055_ACC_INT_AM_NM_Z_AXIS | 
+		BNO055_ACC_INT_AM_NM_Y_AXIS | 
+		BNO055_ACC_INT_AM_NM_X_AXIS
+	);
 	// TODO - Why calibration has to be written again ?
     bno055_setCalibrationData(bno_calib_data);
 	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
