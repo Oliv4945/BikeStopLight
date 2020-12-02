@@ -1,6 +1,9 @@
-# Created by https://www.gitignore.io/api/kicad
-# Edit at https://www.gitignore.io/?templates=kicad
+*-rescue.*
 Software/build
+**/.vscode/.*.state.json
+
+# Created by https://www.toptal.com/developers/gitignore/api/vscode,kicad
+# Edit at https://www.toptal.com/developers/gitignore?templates=vscode,kicad
 
 ### KiCad ###
 # For PCBs designed using KiCad: http://www.kicad-pcb.org/
@@ -11,12 +14,13 @@ Software/build
 *.bak
 *.bck
 *.kicad_pcb-bak
+*.sch-bak
 *~
 _autosave-*
 *.tmp
-*-rescue.lib
 *-save.pro
 *-save.kicad_pcb
+fp-info-cache
 
 # Netlist files (exported from Eeschema)
 *.net
@@ -30,7 +34,7 @@ _autosave-*
 *.csv
 
 ### KiCad Patch ###
-escue-backup/
+rescue-backup/
 
 *.tsv
 bom/
@@ -38,4 +42,12 @@ bom/
 # Gerber export output
 out/
 
-# End of https://www.gitignore.io/api/kicad
+### vscode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# End of https://www.toptal.com/developers/gitignore/api/vscode,kicad
