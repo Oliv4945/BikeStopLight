@@ -160,11 +160,10 @@ int main(void)
 				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET); // I2C
 				HAL_ADCEx_DisableVREFINT();
 				HAL_ADC_DeInit(&hadc);
-				HAL_ADC_MspDeInit(&hadc);
-				// HAL_I2C_MspDeInit(&hi2c1);
-				HAL_SPI_MspDeInit(&hspi1);
-				HAL_TSC_MspDeInit(&htsc);
-				HAL_TIM_Base_MspDeInit(&htim2);
+				HAL_I2C_DeInit(&hi2c1);
+				HAL_SPI_DeInit(&hspi1);
+				HAL_TSC_DeInit(&htsc);
+				HAL_TIM_Base_DeInit(&htim2);
 				GPIO_InitStruct.Pin = 0xFFFFU;
 				GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
 				GPIO_InitStruct.Pull = GPIO_NOPULL;
