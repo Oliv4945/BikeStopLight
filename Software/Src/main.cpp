@@ -138,36 +138,7 @@ int main(void)
 	// POWER LDR
 	HAL_GPIO_WritePin(LDR_PWR_GPIO_Port, LDR_PWR_Pin, GPIO_PIN_SET);
 
-	// BNO055 init
-	bno055_assignI2C(&hi2c1);
-	bno055_setup();
-	// BNO055 Calibration
-    bno055_setCalibrationData(eeprom_read_bno_calibration_data());
-    bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
-	bno055_calibration_state_t bno_calib_state = {.sys = 0, .gyro = 0, .mag = 0, .accel = 0};
-	while ((bno_calib_state.sys != 3) || (bno_calib_state.mag != 3) ||  (bno_calib_state.gyro != 3) || (bno_calib_state.accel != 3)) {
-		bno_calib_state = bno055_getCalibrationState();
-		HAL_Delay(1000);
-	}
-	HAL_GPIO_WritePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin, GPIO_PIN_RESET);
-	bno055_calibration_data_t bno_calib_data = bno055_getCalibrationData();
-	eeprom_write_bno_calibration_data(bno_calib_data);
-
-	// Enable only accelerometer interrupt and redirect it to interrupt pin. Cleat INT flags
-	// TODO - Why it can not be set before calibration procedure ?
-	bno055_setOperationMode(BNO055_OPERATION_MODE_CONFIG);
-	bno055_setInterruptMask(BNO055_INT_MSK_ACC_NM | BNO055_INT_MSK_ACC_AM);
-	bno055_getInterruptStatus();
-	bno055_setInterruptEnable(BNO055_INT_EN_ACC_NM | BNO055_INT_EN_ACC_AM);
-	// bno055_setInterruptAccelThresholds(0.1, 0, 1);
-	// bno055_setInterruptNoOrSlowMotion(1, 1);
-	bno055_setInterruptAccelSettings(
-		BNO055_ACC_INT_AM_NM_Z_AXIS | 
-		BNO055_ACC_INT_AM_NM_Y_AXIS | 
-		BNO055_ACC_INT_AM_NM_X_AXIS
-	);
-	// TODO - Why calibration has to be written again ?
-    bno055_setCalibrationData(bno_calib_data);
+	bno_init();
 	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
 	
 	volatile uint8_t bno_int_statu = 0;
@@ -341,6 +312,41 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void bno_init() {
+// BNO055 init
+	bno055_assignI2C(&hi2c1);
+	bno055_setup();
+	// BNO055 Calibration
+    bno055_setCalibrationData(eeprom_read_bno_calibration_data());
+    bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
+	bno055_calibration_state_t bno_calib_state = {.sys = 0, .gyro = 0, .mag = 0, .accel = 0};
+	while ((bno_calib_state.sys != 3) || (bno_calib_state.mag != 3) ||  (bno_calib_state.gyro != 3) || (bno_calib_state.accel != 3)) {
+		bno_calib_state = bno055_getCalibrationState();
+		HAL_Delay(1000);
+	}
+	HAL_GPIO_WritePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin, GPIO_PIN_RESET);
+	bno055_calibration_data_t bno_calib_data = bno055_getCalibrationData();
+	eeprom_write_bno_calibration_data(bno_calib_data);
+
+	// Enable only accelerometer interrupt and redirect it to interrupt pin. Cleat INT flags
+	// TODO - Why it can not be set before calibration procedure ?
+	bno055_setOperationMode(BNO055_OPERATION_MODE_CONFIG);
+	bno055_setInterruptMask(BNO055_INT_MSK_ACC_NM | BNO055_INT_MSK_ACC_AM);
+	bno055_getInterruptStatus();
+	bno055_setInterruptEnable(BNO055_INT_EN_ACC_NM | BNO055_INT_EN_ACC_AM);
+	// bno055_setInterruptAccelThresholds(0.1, 0, 1);
+	// bno055_setInterruptNoOrSlowMotion(1, 1);
+	bno055_setInterruptAccelSettings(
+		BNO055_ACC_INT_AM_NM_Z_AXIS | 
+		BNO055_ACC_INT_AM_NM_Y_AXIS | 
+		BNO055_ACC_INT_AM_NM_X_AXIS
+	);
+	// TODO - Why calibration has to be written again ?
+    bno055_setCalibrationData(bno_calib_data);
+}
+
+
+
 void HAL_LPTIM_AutoReloadMatchCallback(LPTIM_HandleTypeDef *hlptim) {
 	state = braking_timeout;
 }
