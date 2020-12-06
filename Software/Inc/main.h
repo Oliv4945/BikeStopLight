@@ -59,6 +59,7 @@ void Error_Handler(void);
 void bno_init();
 bno055_calibration_data_t eeprom_read_bno_calibration_data();
 void eeprom_write_bno_calibration_data(bno055_calibration_data_t data);
+void enter_stop_mode();
 uint16_t get_ldr_value(void);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 

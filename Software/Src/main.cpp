@@ -155,35 +155,7 @@ int main(void)
 				// bno055_setPowerMode(BNO055_POWER_MODE_SUSPEND);
 				HAL_GPIO_WritePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(WS2812_PWR_ON_GPIO_Port, WS2812_PWR_ON_Pin, GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(LDR_PWR_GPIO_Port, LDR_PWR_Pin, GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET); // I2C
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET); // I2C
-				HAL_ADCEx_DisableVREFINT();
-				HAL_ADC_DeInit(&hadc);
-				HAL_I2C_DeInit(&hi2c1);
-				HAL_SPI_DeInit(&hspi1);
-				HAL_TSC_DeInit(&htsc);
-				HAL_TIM_Base_DeInit(&htim2);
-				GPIO_InitStruct.Pin = 0xFFFFU;
-				GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-				GPIO_InitStruct.Pull = GPIO_NOPULL;
-				// HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-				GPIO_InitStruct.Pin = 0xDBU;
-				// HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-				// __HAL_RCC_GPIOA_CLK_DISABLE();
-				__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
-				HAL_SuspendTick();
-				HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
-				HAL_ResumeTick();
-				MX_GPIO_Init();
-  				MX_I2C1_Init();
-				HAL_GPIO_WritePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin, GPIO_PIN_SET);
-				bno_int_statu = 0; // Debug only
-			} else {
-				// HAL_GPIO_WritePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin, GPIO_PIN_SET);
-			}
-			// bno_int_statu += 1;
-		}
+					enter_stop_mode();
 		HAL_Delay(500);
 	}
 
@@ -375,6 +347,34 @@ void eeprom_write_bno_calibration_data(bno055_calibration_data_t data) {
 	HAL_FLASHEx_DATAEEPROM_Program(FLASH_TYPEPROGRAMDATA_HALFWORD, eeprom_base_address + 20, buffer_16);
 	HAL_FLASHEx_DATAEEPROM_Lock();
 }
+
+void enter_stop_mode() {
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+	HAL_GPIO_WritePin(LDR_PWR_GPIO_Port, LDR_PWR_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET); // I2C
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, GPIO_PIN_SET); // I2C
+	HAL_ADCEx_DisableVREFINT();
+	HAL_ADC_DeInit(&hadc);
+	HAL_I2C_DeInit(&hi2c1);
+	HAL_SPI_DeInit(&hspi1);
+	HAL_TSC_DeInit(&htsc);
+	HAL_TIM_Base_DeInit(&htim2);
+	GPIO_InitStruct.Pin = 0xFFFFU;
+	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	// HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = 0xDBU;
+	// HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	// __HAL_RCC_GPIOA_CLK_DISABLE();
+	__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
+	HAL_SuspendTick();
+	HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
+	HAL_ResumeTick();
+	MX_GPIO_Init();
+	MX_I2C1_Init();
+}
+
 
 uint16_t get_ldr_value(void) {
 	uint16_t value;
