@@ -60,6 +60,7 @@ const uint32_t eeprom_base_address = 0x08080000;
 const uint8_t linacc_filter_weight = 10;
 volatile StatesEnum state = off;
 volatile bool bno_int_triggered = false;
+volatile bool lptim_triggered = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -142,21 +143,32 @@ int main(void)
 	bno055_setOperationMode(BNO055_OPERATION_MODE_NDOF);
 	
 	volatile uint8_t bno_int_statu = 0;
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	while(1) {
 		if (bno_int_triggered == true) {
 			bno_int_triggered = false;
 			bno_int_statu = bno055_getInterruptStatus();
-		}
 		if (bno_int_statu > 0) {
 		// if (bno_int_statu == 0) {
 			if ((bno_int_statu & BNO055_INT_STATUS_ACC_NM) == BNO055_INT_STATUS_ACC_NM) {
 			// if (bno_int_statu == 0) {
-				// bno055_setPowerMode(BNO055_POWER_MODE_SUSPEND);
+					bno055_setPowerMode(BNO055_POWER_MODE_SUSPEND);
 				HAL_GPIO_WritePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(WS2812_PWR_ON_GPIO_Port, WS2812_PWR_ON_Pin, GPIO_PIN_RESET);
+			  		HAL_LPTIM_Counter_Start_IT(&hlptim1, 2890);
 					enter_stop_mode();
-		HAL_Delay(500);
+					HAL_GPIO_WritePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin, GPIO_PIN_SET);
+					bno_int_statu = 0; // Debug only
+				} else {
+					// HAL_GPIO_WritePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin, GPIO_PIN_SET);
+	}
+				// bno_int_statu += 1;
+			}
+		} else if (lptim_triggered == true) {
+			lptim_triggered = false;
+			HAL_GPIO_TogglePin(LED_DOWN_GPIO_Port, LED_DOWN_Pin);
+			enter_stop_mode();
+		}
+		HAL_Delay(50);
 	}
 
   /* USER CODE END 2 */
@@ -218,7 +230,9 @@ int main(void)
 			  leds.setColorRange(0, leds_on, led_color_red);
 			  leds.update();
 			  state = braking;
-			  HAL_LPTIM_Counter_Start_IT(&hlptim1, 65000);
+			  // Reload timing is 0.5 sec
+			  // TODO: Should stop counter !
+			  HAL_LPTIM_Counter_Start_IT(&hlptim1, 144);
 		  }
 		  if ((linacc_decision > 0.3) && (state == braking)) {
 			  // Reset timer breaking is still detected
@@ -251,9 +265,10 @@ void SystemClock_Config(void)
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
   /** Initializes the CPU, AHB and APB busses clocks 
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -274,7 +289,7 @@ void SystemClock_Config(void)
   }
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_LPTIM1;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
-  PeriphClkInit.LptimClockSelection = RCC_LPTIM1CLKSOURCE_PCLK;
+  PeriphClkInit.LptimClockSelection = RCC_LPTIM1CLKSOURCE_LSI;
 
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
@@ -319,7 +334,12 @@ void bno_init() {
 
 
 void HAL_LPTIM_AutoReloadMatchCallback(LPTIM_HandleTypeDef *hlptim) {
-	state = braking_timeout;
+	switch (state) {
+		case braking:
+			state = braking_timeout;
+		case off:
+			lptim_triggered = true;
+	}
 }
 
 bno055_calibration_data_t eeprom_read_bno_calibration_data() {
